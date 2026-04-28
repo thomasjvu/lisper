@@ -1,0 +1,34 @@
+<svg width="1600" height="900" viewBox="0 0 1600 900" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1600" height="900" fill="#F2ECE3"/>
+  <rect width="1600" height="900" fill="url(#grain)" opacity="0.25"/>
+  <circle cx="1350" cy="170" r="190" fill="#E7DED1"/>
+  <circle cx="1260" cy="120" r="44" fill="#111111"/>
+  <path d="M0 665C119 621 224 596 358 604C515 614 628 707 799 707C986 707 1093 587 1266 570C1398 557 1490 592 1600 647V900H0V665Z" fill="#E2D8C9"/>
+  <path d="M0 711C120 670 235 648 385 664C542 681 656 778 813 778C980 778 1080 679 1237 652C1375 629 1491 651 1600 699V900H0V711Z" fill="#D8CCBC"/>
+  <path d="M0 778C143 748 260 745 408 761C578 779 685 846 847 846C1014 846 1134 761 1300 746C1411 736 1508 746 1600 782V900H0V778Z" fill="#CCC0AF"/>
+  <g opacity="0.9">
+    <path d="M256 252L282 201L308 252H256Z" fill="#111111"/>
+    <path d="M356 208L374 173L392 208H356Z" fill="#111111"/>
+    <path d="M1158 282L1176 247L1194 282H1158Z" fill="#111111"/>
+    <path d="M1048 206L1071 160L1094 206H1048Z" fill="#111111"/>
+  </g>
+  <g opacity="0.75">
+    <circle cx="228" cy="330" r="6" fill="#111111"/>
+    <circle cx="1235" cy="349" r="8" fill="#111111"/>
+    <circle cx="1322" cy="267" r="6" fill="#111111"/>
+    <circle cx="988" cy="292" r="5" fill="#111111"/>
+  </g>
+  <path d="M0 0H1600V900H0V0Z" fill="url(#fade)"/>
+  <defs>
+    <linearGradient id="fade" x1="800" y1="0" x2="800" y2="900" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFFDF9" stop-opacity="0.08"/>
+      <stop offset="1" stop-color="#FFFDF9" stop-opacity="0.42"/>
+    </linearGradient>
+    <filter id="noiseFilter">
+      <feTurbulence type="fractalNoise" baseFrequency="0.78" numOctaves="2" stitchTiles="stitch"/>
+    </filter>
+    <pattern id="grain" patternUnits="userSpaceOnUse" width="1600" height="900">
+      <rect width="1600" height="900" filter="url(#noiseFilter)" opacity="0.2"/>
+    </pattern>
+  </defs>
+</svg>
