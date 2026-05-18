@@ -300,7 +300,15 @@ export default function TrainingScreen() {
                     </>
                   )}
 
-                  <p style={styles.bodyText}>{coaching.feedback}</p>
+                  <div style={styles.coachBubble}>
+                    <div style={styles.coachMascot}>
+                      <MonochromeMascot size="sm" talking />
+                    </div>
+                    <div style={styles.coachCopy}>
+                      <div style={styles.sectionLabel}>Coach</div>
+                      <p style={styles.bodyText}>{coaching.feedback}</p>
+                    </div>
+                  </div>
                 </>
               ) : (
                 <div style={styles.emptyState}>
@@ -400,6 +408,25 @@ const styles: Record<string, CSSProperties> = {
     display: 'flex',
     flexDirection: 'column',
     gap: 12,
+  },
+  coachBubble: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: 12,
+    borderRadius: 16,
+    border: '1px solid rgba(88, 255, 140, 0.22)',
+    backgroundColor: 'rgba(10, 30, 23, 0.42)',
+    padding: 12,
+  },
+  coachMascot: {
+    flex: '0 0 auto',
+    transform: 'scale(0.82)',
+    transformOrigin: 'center',
+    margin: -10,
+  },
+  coachCopy: {
+    minWidth: 0,
+    flex: 1,
   },
   stepBadge: {
     fontSize: 11,

@@ -1,42 +1,65 @@
 import { useEffect, useState } from 'react';
 import type { CSSProperties } from 'react';
 
+import mascotSpriteUrl from '../../assets/snake-talking-spritesheet.png';
 import { usePreferences } from '../utils/preferences';
 
 interface MonochromeMascotProps {
   size?: 'sm' | 'md' | 'lg';
   caption?: string;
+  talking?: boolean;
 }
 
-type MascotFrame = 'idle' | 'blink' | 'chirp' | 'wing-lift' | 'tilt';
+type MascotFrame = 'idle' | 'blink' | 'talk-1' | 'talk-2' | 'talk-3' | 'talk-4' | 'coil-lift' | 'tilt';
 
 const HERO_SEQUENCE: ReadonlyArray<{ frame: MascotFrame; duration: number }> = [
-  { frame: 'idle', duration: 2000 },
+  { frame: 'idle', duration: 2200 },
   { frame: 'blink', duration: 140 },
-  { frame: 'idle', duration: 220 },
-  { frame: 'chirp', duration: 240 },
-  { frame: 'idle', duration: 200 },
-  { frame: 'wing-lift', duration: 260 },
-  { frame: 'idle', duration: 220 },
-  { frame: 'tilt', duration: 260 },
+  { frame: 'idle', duration: 280 },
+  { frame: 'talk-1', duration: 90 },
+  { frame: 'talk-2', duration: 90 },
+  { frame: 'talk-3', duration: 110 },
+  { frame: 'talk-4', duration: 90 },
+  { frame: 'idle', duration: 260 },
+  { frame: 'coil-lift', duration: 380 },
+  { frame: 'idle', duration: 260 },
+  { frame: 'tilt', duration: 380 },
 ];
 
 const INLINE_SEQUENCE: ReadonlyArray<{ frame: MascotFrame; duration: number }> = [
-  { frame: 'idle', duration: 2600 },
-  { frame: 'blink', duration: 120 },
-  { frame: 'idle', duration: 180 },
-  { frame: 'chirp', duration: 220 },
+  { frame: 'idle', duration: 2800 },
+  { frame: 'blink', duration: 140 },
+  { frame: 'idle', duration: 220 },
+  { frame: 'talk-1', duration: 90 },
+  { frame: 'talk-2', duration: 90 },
+  { frame: 'talk-3', duration: 100 },
+  { frame: 'talk-4', duration: 80 },
 ];
 
-export default function MonochromeMascot({ size = 'md', caption }: MonochromeMascotProps) {
+const TALK_SEQUENCE: ReadonlyArray<{ frame: MascotFrame; duration: number }> = [
+  { frame: 'talk-1', duration: 90 },
+  { frame: 'talk-2', duration: 90 },
+  { frame: 'talk-3', duration: 110 },
+  { frame: 'talk-4', duration: 90 },
+];
+
+const SIZE_STYLES: Record<NonNullable<MonochromeMascotProps['size']>, CSSProperties> = {
+  sm: { width: 104 },
+  md: { width: 154 },
+  lg: { width: 232 },
+};
+
+export default function MonochromeMascot({ size = 'md', caption, talking: forceTalking = false }: MonochromeMascotProps) {
   const [frameIndex, setFrameIndex] = useState(0);
   const { reducedMotion } = usePreferences();
 
-  const large = size === 'lg';
-  const small = size === 'sm';
-  const sequence = small ? INLINE_SEQUENCE : HERO_SEQUENCE;
+  const sequence = forceTalking ? TALK_SEQUENCE : size === 'sm' ? INLINE_SEQUENCE : HERO_SEQUENCE;
   const frame = reducedMotion ? 'idle' : sequence[frameIndex % sequence.length].frame;
-  const scale = large ? 1.2 : small ? 0.76 : 1;
+  const talkFrame = frame.startsWith('talk-') ? Number(frame.slice(-1)) - 1 : 0;
+  const talking = frame.startsWith('talk-');
+  const coilLift = frame === 'coil-lift';
+  const tilt = frame === 'tilt';
+  const blink = frame === 'blink';
 
   useEffect(() => {
     if (reducedMotion) {
@@ -53,93 +76,31 @@ export default function MonochromeMascot({ size = 'md', caption }: MonochromeMas
     };
   }, [frameIndex, reducedMotion, sequence]);
 
-  const blink = frame === 'blink';
-  const chirp = frame === 'chirp';
-  const wingLift = frame === 'wing-lift';
-  const tilt = frame === 'tilt';
-
   return (
-    <div style={{ ...styles.wrapper, ...(large ? styles.wrapperLarge : null), ...(small ? styles.wrapperSmall : null) }}>
-      <div style={{ ...styles.halo, ...(large ? styles.haloLarge : null), ...(small ? styles.haloSmall : null) }} />
-      <div style={{ ...styles.shadow, ...(large ? styles.shadowLarge : null), ...(small ? styles.shadowSmall : null) }} />
+    <div style={{ ...styles.wrapper, ...(size === 'lg' ? styles.wrapperLarge : null) }}>
+      <div style={{ ...styles.halo, ...(size === 'sm' ? styles.haloSmall : null), ...(size === 'lg' ? styles.haloLarge : null) }} />
+      <div style={{ ...styles.shadow, ...(size === 'sm' ? styles.shadowSmall : null), ...(size === 'lg' ? styles.shadowLarge : null) }} />
 
-      {chirp ? (
-        <div style={{ ...styles.noteCluster, ...(large ? styles.noteClusterLarge : null) }}>
+      {talking ? (
+        <div style={{ ...styles.noteCluster, ...(size === 'lg' ? styles.noteClusterLarge : null) }}>
           <div style={{ ...styles.noteDot, ...styles.noteDotLarge }} />
           <div style={styles.noteDot} />
           <div style={{ ...styles.noteDot, ...styles.noteDotTiny }} />
         </div>
       ) : null}
 
+      {blink ? <div style={{ ...styles.sparkle, ...(size === 'sm' ? styles.sparkleSmall : null) }} /> : null}
+
       <div
+        aria-hidden="true"
         style={{
-          ...styles.scene,
-          transform: `scale(${scale}) translateY(${wingLift ? -6 : chirp ? -3 : 0}px) rotate(${tilt ? '-5deg' : '0deg'})`,
+          ...styles.sprite,
+          ...SIZE_STYLES[size],
+          backgroundImage: `url(${mascotSpriteUrl})`,
+          backgroundPosition: `${(talking ? talkFrame : 0) * (100 / 3)}% 0%`,
+          transform: `translateY(${coilLift ? -7 : talking ? -4 : 0}px) rotate(${tilt ? '-4deg' : talking ? '2deg' : '0deg'})`,
         }}
-      >
-        <div style={{ ...styles.tail, transform: `rotate(${tilt ? '-18deg' : wingLift ? '-8deg' : '-10deg'})` }} />
-        <div
-          style={{
-            ...styles.wing,
-            ...styles.wingLeft,
-            transform: `rotate(${wingLift ? '-48deg' : chirp ? '-32deg' : '-24deg'}) translateY(${wingLift ? -7 : 0}px)`,
-          }}
-        />
-        <div
-          style={{
-            ...styles.wing,
-            ...styles.wingRight,
-            transform: `rotate(${wingLift ? '48deg' : chirp ? '30deg' : '22deg'}) translateY(${wingLift ? -7 : 0}px)`,
-          }}
-        />
-
-        <div style={styles.body}>
-          <div style={styles.belly} />
-          <div style={styles.bellyStripe} />
-        </div>
-
-        <div style={styles.neck} />
-
-        <div style={{ ...styles.head, transform: `rotate(${chirp ? '5deg' : tilt ? '-7deg' : '0deg'})` }}>
-          <div style={{ ...styles.crest, ...styles.crestLeft }} />
-          <div style={{ ...styles.crest, ...styles.crestCenter }} />
-          <div style={{ ...styles.crest, ...styles.crestRight }} />
-
-          <div style={styles.facePatch} />
-
-          <div style={styles.eyeRow}>
-            <div style={{ ...styles.eye, ...(blink ? styles.eyeBlink : null) }} />
-            <div style={{ ...styles.eye, ...(blink ? styles.eyeBlink : null) }} />
-          </div>
-
-          <div style={styles.cheekRow}>
-            <div style={styles.cheek} />
-            <div style={styles.cheek} />
-          </div>
-
-          <div style={styles.beakWrap}>
-            <div
-              style={{
-                ...styles.beakUpper,
-                transform: `rotate(${chirp ? '-10deg' : '0deg'}) translateY(${chirp ? -2 : 0}px)`,
-              }}
-            />
-            <div
-              style={{
-                ...styles.beakLower,
-                transform: `rotate(${chirp ? '11deg' : '0deg'}) translateY(${chirp ? 2 : 0}px)`,
-              }}
-            />
-          </div>
-        </div>
-
-        <div style={styles.footRow}>
-          <div style={styles.foot} />
-          <div style={styles.foot} />
-        </div>
-
-        <div style={styles.perch} />
-      </div>
+      />
 
       {caption ? <p style={styles.caption}>{caption}</p> : null}
     </div>
@@ -154,268 +115,114 @@ const styles: Record<string, CSSProperties> = {
     alignItems: 'center',
     justifyContent: 'center',
     gap: 10,
+    minWidth: 118,
+    minHeight: 118,
+    isolation: 'isolate',
   },
   wrapperLarge: {
     gap: 16,
-  },
-  wrapperSmall: {
-    gap: 6,
+    minWidth: 246,
+    minHeight: 246,
   },
   halo: {
     position: 'absolute',
-    top: 8,
-    width: 148,
-    height: 148,
+    top: '10%',
+    width: 124,
+    height: 124,
     borderRadius: 999,
-    backgroundColor: 'rgba(25, 84, 102, 0.24)',
+    background: 'radial-gradient(circle at 50% 40%, rgba(88, 255, 140, 0.32), rgba(17, 73, 52, 0.18) 62%, transparent 70%)',
+    zIndex: -2,
   },
   haloLarge: {
-    width: 196,
-    height: 196,
+    width: 220,
+    height: 220,
   },
   haloSmall: {
-    width: 104,
-    height: 104,
+    width: 96,
+    height: 96,
   },
   shadow: {
     position: 'absolute',
-    bottom: 10,
-    width: 102,
-    height: 20,
+    bottom: 9,
+    width: 82,
+    height: 16,
     borderRadius: 999,
-    backgroundColor: 'rgba(10, 55, 73, 0.82)',
-    opacity: 0.8,
+    backgroundColor: 'rgba(6, 32, 25, 0.24)',
+    filter: 'blur(2px)',
+    zIndex: -1,
   },
   shadowLarge: {
-    width: 142,
+    bottom: 4,
+    width: 148,
     height: 24,
   },
   shadowSmall: {
-    width: 74,
-    height: 14,
+    width: 60,
+    height: 12,
+  },
+  sprite: {
+    display: 'block',
+    aspectRatio: '1 / 1',
+    backgroundRepeat: 'no-repeat',
+    backgroundSize: '400% 100%',
+    userSelect: 'none',
+    filter: 'drop-shadow(0 12px 18px rgba(4, 30, 24, 0.28))',
+    transformOrigin: '50% 86%',
+    transition: 'transform 220ms ease, filter 220ms ease',
   },
   noteCluster: {
     position: 'absolute',
-    right: -2,
-    top: 16,
+    right: 2,
+    top: 18,
     display: 'flex',
     flexDirection: 'column',
     gap: 6,
     alignItems: 'center',
+    zIndex: 2,
   },
   noteClusterLarge: {
-    right: -12,
-    top: 28,
+    right: -2,
+    top: 34,
   },
   noteDot: {
     width: 8,
     height: 8,
     borderRadius: 999,
-    backgroundColor: 'var(--color-warning)',
-    border: '1px solid var(--color-bg)',
+    backgroundColor: '#63ff8a',
+    border: '1px solid rgba(255, 255, 255, 0.78)',
+    boxShadow: '0 3px 10px rgba(28, 198, 96, 0.24)',
   },
   noteDotLarge: {
-    width: 10,
-    height: 10,
+    width: 11,
+    height: 11,
   },
   noteDotTiny: {
-    width: 6,
-    height: 6,
+    width: 5,
+    height: 5,
   },
-  scene: {
-    position: 'relative',
-    width: 164,
-    height: 190,
-    transition: 'transform 180ms ease',
-  },
-  tail: {
+  sparkle: {
     position: 'absolute',
-    left: 18,
-    bottom: 58,
-    width: 42,
-    height: 72,
-    borderRadius: 24,
-    backgroundColor: 'var(--color-accent-strong)',
-    border: '2px solid var(--color-bg)',
-    transformOrigin: 'bottom center',
-  },
-  wing: {
-    position: 'absolute',
-    top: 62,
-    width: 46,
-    height: 78,
-    backgroundColor: 'var(--color-accent)',
-    border: '2px solid var(--color-bg)',
-    borderRadius: 26,
-    transformOrigin: 'top center',
-  },
-  wingLeft: {
-    left: 22,
-  },
-  wingRight: {
-    right: 20,
-  },
-  body: {
-    position: 'absolute',
-    top: 54,
-    left: 40,
-    width: 84,
-    height: 98,
-    borderRadius: 44,
-    backgroundColor: 'var(--color-success)',
-    border: '2px solid var(--color-bg)',
-    overflow: 'hidden',
-  },
-  belly: {
-    position: 'absolute',
-    inset: '18px 16px 12px 16px',
-    borderRadius: 32,
-    backgroundColor: 'var(--color-surface)',
-  },
-  bellyStripe: {
-    position: 'absolute',
-    left: 26,
-    right: 26,
-    bottom: 18,
-    height: 8,
+    right: 18,
+    top: 16,
+    width: 11,
+    height: 11,
     borderRadius: 999,
-    backgroundColor: 'var(--color-border)',
+    backgroundColor: '#c8ffd4',
+    boxShadow: '0 0 0 5px rgba(94, 255, 136, 0.2), 0 0 20px rgba(47, 228, 99, 0.28)',
+    zIndex: 2,
   },
-  neck: {
-    position: 'absolute',
-    top: 40,
-    left: 66,
-    width: 34,
-    height: 28,
-    borderRadius: 18,
-    backgroundColor: 'var(--color-accent-strong)',
-    border: '2px solid var(--color-bg)',
-  },
-  head: {
-    position: 'absolute',
-    top: 8,
-    left: 46,
-    width: 72,
-    height: 72,
-    borderRadius: 36,
-    backgroundColor: 'var(--color-accent)',
-    border: '2px solid var(--color-bg)',
-    transformOrigin: 'bottom center',
-  },
-  crest: {
-    position: 'absolute',
-    top: -9,
-    width: 16,
-    height: 22,
-    backgroundColor: 'var(--color-success)',
-    border: '2px solid var(--color-bg)',
-    borderRadius: 12,
-  },
-  crestLeft: {
-    left: 12,
-    transform: 'rotate(-18deg)',
-  },
-  crestCenter: {
-    left: 27,
-  },
-  crestRight: {
-    right: 11,
-    transform: 'rotate(18deg)',
-  },
-  facePatch: {
-    position: 'absolute',
-    left: 11,
-    right: 11,
-    bottom: 12,
-    height: 30,
-    borderRadius: 18,
-    backgroundColor: 'var(--color-surface)',
-  },
-  eyeRow: {
-    position: 'absolute',
-    top: 22,
-    left: 16,
-    right: 16,
-    display: 'flex',
-    justifyContent: 'space-between',
-  },
-  eye: {
-    width: 10,
-    height: 10,
-    borderRadius: 999,
-    backgroundColor: 'var(--color-bg)',
-  },
-  eyeBlink: {
-    height: 2,
-    marginTop: 4,
-  },
-  cheekRow: {
-    position: 'absolute',
-    top: 38,
-    left: 14,
-    right: 14,
-    display: 'flex',
-    justifyContent: 'space-between',
-  },
-  cheek: {
+  sparkleSmall: {
+    right: 8,
+    top: 9,
     width: 8,
     height: 8,
-    borderRadius: 999,
-    backgroundColor: 'var(--color-warning)',
-    opacity: 0.9,
-  },
-  beakWrap: {
-    position: 'absolute',
-    left: 22,
-    right: 22,
-    bottom: 12,
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    gap: 2,
-  },
-  beakUpper: {
-    width: 28,
-    height: 12,
-    borderRadius: 12,
-    backgroundColor: 'var(--color-warning)',
-    border: '2px solid var(--color-bg)',
-  },
-  beakLower: {
-    width: 22,
-    height: 8,
-    borderRadius: 10,
-    backgroundColor: 'var(--color-danger)',
-    border: '2px solid var(--color-bg)',
-  },
-  footRow: {
-    position: 'absolute',
-    bottom: 18,
-    left: 56,
-    right: 56,
-    display: 'flex',
-    justifyContent: 'space-between',
-  },
-  foot: {
-    width: 18,
-    height: 12,
-    borderRadius: 999,
-    backgroundColor: 'var(--color-warning)',
-    border: '2px solid var(--color-bg)',
-  },
-  perch: {
-    position: 'absolute',
-    bottom: 12,
-    left: 34,
-    right: 34,
-    height: 8,
-    borderRadius: 999,
-    backgroundColor: 'var(--color-border-strong)',
   },
   caption: {
     margin: 0,
+    maxWidth: 180,
+    color: 'var(--color-muted)',
     fontSize: 12,
-    color: 'var(--color-text-subtle)',
+    lineHeight: 1.45,
     textAlign: 'center',
   },
 };
