@@ -1,54 +1,40 @@
 # Lisper
 
-Lisper is a Gemma 4 speech-practice coach for lisp correction. It gives users a short, low-pressure response for /s/ practice:
-
-```text
-Detected class: clear|frontal|lateral|dental|palatal
-Reason: one brief reason tied to tongue placement or airflow
-Corrective cue: one concrete next-step cue
-Encouragement: one brief supportive line
-```
+Lisper is a Gemma 4 speech-practice coach for lisp correction. It combines a fine-tuned Gemma 4 E2B coaching model, a browser WebGPU app, and a ZeroGPU fallback Space for users whose devices cannot comfortably run the browser model.
 
 This is a practice assistant, not a medical diagnosis tool or a replacement for a speech-language pathologist.
 
-## Hackathon Model Story
+## Project Layout
 
-The submitted model family is Gemma 4 E2B fine-tuned with Unsloth LoRA.
+```text
+lisper-app/                  Vite + React Native Web app and Gemma Lab
+spaces/lisper-zerogpu/       Hugging Face ZeroGPU fallback Space
+src/model/                   Dataset, training, eval, export, and publish utilities
+notebooks/                   Kaggle training/eval notebooks and upload metadata
+docs/                        Hackathon writeups, model cards, screenshots, and notes
+scripts/                     Deployment helpers
+videos/lisper-hackathon/     Demo video composition source
+```
+
+Large local datasets, Kaggle output bundles, Python virtualenvs, build outputs, and rendered videos are intentionally ignored.
+
+## Submitted Model Story
 
 - Base model: `google/gemma-4-E2B-it`
+- Fine-tuning: Unsloth LoRA
 - LoRA adapter: https://huggingface.co/thomasjvu/lisper-gemma4-e2b-audio-lora
 - Merged full checkpoint: https://huggingface.co/thomasjvu/lisper-gemma4-e2b-audio-full
 - Browser q4f16 package: https://huggingface.co/thomasjvu/lisper-gemma4-e2b-audio-onnx-q4f16
 - ZeroGPU fallback Space: https://huggingface.co/spaces/thomasjvu/lisper-zerogpu
 
+The release-quality gate is the v18 hybrid acoustic+Gemma held-out path: `2,000` rows, `0` hard errors, `0.976` class match, and `1.0` exact output-format rate.
+
 E4B and q2f16 are experimental follow-up paths and are not part of the submitted model gate.
 
-## Evaluation
-
-The release-quality evaluation is the v18 hybrid acoustic+Gemma held-out path:
-
-- Held-out rows: `2,000`
-- Hard errors: `0`
-- Class match: `0.976`
-- Clear/non-clear match: `0.989`
-- Exact four-line format: `1.0`
-
-The lisp-class evidence comes from acoustic features; Gemma provides the structured coaching response and tone. These metrics should not be described as a pure direct-Gemma raw-audio classification result.
-
-## App Runtime
-
-The browser app uses the q4f16 ONNX/WebGPU package:
+## Run The App
 
 ```bash
-VITE_LISPER_BROWSER_MODEL_ID=thomasjvu/lisper-gemma4-e2b-audio-onnx-q4f16
-VITE_LISPER_BROWSER_DTYPE=q4f16
-```
-
-The ZeroGPU Space uses the same E2B model lineage server-side plus the packaged v18 ExtraTrees acoustic sidecar.
-
-## Run Locally
-
-```bash
+cd lisper-app
 npm install
 npm run start
 ```
@@ -56,15 +42,27 @@ npm run start
 Gemma Lab:
 
 ```bash
+cd lisper-app
 npm run start:gemma-lab
 ```
 
 Production checks:
 
 ```bash
+cd lisper-app
 npm run build:gemma-lab
 npm run build:web
 ```
+
+## ZeroGPU Space
+
+The Space is deployed from `spaces/lisper-zerogpu/`:
+
+```bash
+scripts/deploy_lisper_zerogpu_space.sh
+```
+
+The live path uses the v18 acoustic gate by default and returns `rejected_audio` or `inconclusive` instead of forcing a lisp label when the recording is silent, noisy, missing usable /s/ evidence, or out of domain.
 
 ## Kaggle Artifacts
 

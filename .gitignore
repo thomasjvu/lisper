@@ -1,42 +1,40 @@
-# Learn more https://docs.github.com/en/get-started/getting-started-with-git/ignoring-files
-
-# dependencies
-node_modules/
-
-# Expo
-.expo/
-dist/
-dist-gemma-lab/
-web-build/
-expo-env.d.ts
-
-# Native
-.kotlin/
-*.orig.*
-*.jks
-*.p8
-*.p12
-*.key
-*.mobileprovision
-
-# Metro
-.metro-health-check*
-
-# debug
-npm-debug.*
-yarn-debug.*
-yarn-error.*
-
-# macOS
+# macOS / editor
 .DS_Store
-*.pem
+*.swp
+*.swo
 
-# local env files
-.env*.local
-
-# typescript
+# Local environment
+.env
+.env.*
+!.env.example
+.venv*/
+venv/
+__pycache__/
+*.py[cod]
+*.pyo
 *.tsbuildinfo
 
-# generated native folders
-/ios
-/android
+# Local agent/plugin cache
+.agents/
+skills-lock.json
+
+# App dependencies and builds
+node_modules/
+lisper-app/node_modules/
+lisper-app/.expo/
+lisper-app/dist/
+lisper-app/dist-gemma-lab/
+lisper-app/web-build/
+lisper-app/expo-env.d.ts
+
+# Generated native app folders
+lisper-app/ios/
+lisper-app/android/
+
+# Large/generated model data
+data/
+notebooks/kaggle_upload/alkahestai/
+
+# Generated caches and render outputs
+videos/**/.hyperframes/
+videos/**/renders/

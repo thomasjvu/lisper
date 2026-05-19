@@ -1,0 +1,36 @@
+# Lisper Model Dependencies
+# For fine-tuning Gemma 4 with Unsloth
+
+# Core
+unsloth
+torch>=2.6.0
+transformers>=5.5.0
+
+# Training
+trl
+deepspeed
+accelerate
+peft
+unsloth_zoo
+
+# Audio processing
+numpy
+scipy
+soundfile
+librosa
+
+# Data
+datasets
+huggingface_hub
+
+# Serving
+fastapi
+uvicorn
+
+# Model export
+gguf
+ctranslate2
+
+# Optional: for testing
+streamlit
+gradio

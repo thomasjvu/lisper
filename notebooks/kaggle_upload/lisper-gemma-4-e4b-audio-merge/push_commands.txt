@@ -1,0 +1,2 @@
+# E4B merge-only notebook push command. Confirm Kaggle HF_TOKEN secret first.
+/Users/area/Library/Python/3.14/bin/kaggle kernels push -p "/Users/area/repos/lisper/notebooks/kaggle_upload/lisper-gemma-4-e4b-audio-merge"

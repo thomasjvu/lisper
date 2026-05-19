@@ -1,0 +1,23 @@
+{
+  "id": "thomasjvu/lisper-gemma4-audio-unsloth",
+  "title": "Lisper Gemma 4 Audio Unsloth Training",
+  "code_file": "kaggle_gemma4_audio_unsloth.ipynb",
+  "language": "python",
+  "kernel_type": "notebook",
+  "is_private": true,
+  "enable_gpu": true,
+  "enable_tpu": false,
+  "enable_internet": true,
+  "keywords": [
+    "gemma-4",
+    "unsloth",
+    "audio",
+    "speech-therapy"
+  ],
+  "dataset_sources": [
+    "thomasjvu/lisper-gemma4-audio"
+  ],
+  "kernel_sources": [],
+  "competition_sources": [],
+  "model_sources": []
+}

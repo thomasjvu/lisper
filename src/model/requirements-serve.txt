@@ -1,0 +1,15 @@
+# Lisper local serving dependencies
+# Use this for the merged-model FastAPI backend on CPU, Apple Silicon, or CUDA.
+
+torch>=2.6.0
+transformers>=5.5.0
+accelerate
+huggingface_hub
+
+numpy
+soundfile
+librosa
+
+fastapi
+uvicorn[standard]
+python-multipart

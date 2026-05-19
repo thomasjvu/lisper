@@ -1,0 +1,11 @@
+{
+  "name": "lisper-hackathon",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "npx --yes hyperframes@0.6.22 preview",
+    "check": "npx --yes hyperframes@0.6.22 lint && npx --yes hyperframes@0.6.22 validate && npx --yes hyperframes@0.6.22 inspect",
+    "render": "npx --yes hyperframes@0.6.22 render",
+    "publish": "npx --yes hyperframes@0.6.22 publish"
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "id": "thomasjvu/lisper-gemma-4-audio-adapter-eval",
+  "title": "Lisper Gemma 4 Audio Adapter Eval",
+  "code_file": "kaggle_gemma4_audio_eval.py",
+  "language": "python",
+  "kernel_type": "script",
+  "is_private": true,
+  "enable_gpu": true,
+  "enable_tpu": false,
+  "enable_internet": true,
+  "keywords": [],
+  "dataset_sources": [
+    "thomasjvu/lisper-gemma4-audio",
+    "thomasjvu/lisper-gemma4-audio-lora"
+  ],
+  "kernel_sources": [],
+  "competition_sources": [],
+  "model_sources": []
+}

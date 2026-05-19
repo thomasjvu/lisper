@@ -1,0 +1,16 @@
+{
+  "id": "thomasjvu/lisper-gemma-4-e4b-audio-merge",
+  "title": "Lisper Gemma 4 E4B Audio Merge",
+  "code_file": "kaggle_gemma4_e4b_audio_merge.ipynb",
+  "language": "python",
+  "kernel_type": "notebook",
+  "is_private": true,
+  "enable_gpu": true,
+  "enable_tpu": false,
+  "enable_internet": true,
+  "keywords": [],
+  "dataset_sources": [],
+  "kernel_sources": [],
+  "competition_sources": [],
+  "model_sources": []
+}

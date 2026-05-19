@@ -1,0 +1,295 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body {
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background: #0c1014;
+        color: #f0fffe;
+        font-family: "Segoe UI", Arial, sans-serif;
+      }
+      #root {
+        position: relative;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background:
+          radial-gradient(circle at 16% 20%, rgba(51,133,158,.34), transparent 34%),
+          radial-gradient(circle at 80% 78%, rgba(42,168,137,.22), transparent 38%),
+          #0c1014;
+      }
+      .scene {
+        position: absolute;
+        inset: 0;
+        overflow: hidden;
+        background:
+          linear-gradient(90deg, rgba(25,84,102,.18) 1px, transparent 1px),
+          linear-gradient(0deg, rgba(25,84,102,.14) 1px, transparent 1px),
+          #0c1014;
+        background-size: 88px 88px;
+      }
+      .scene::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(transparent 0, rgba(255,255,255,.024) 50%, transparent 100%);
+        background-size: 100% 8px;
+        pointer-events: none;
+      }
+      .content {
+        position: relative;
+        z-index: 2;
+        width: 100%;
+        height: 100%;
+        padding: 86px 104px;
+        display: grid;
+        gap: 48px;
+        align-items: center;
+      }
+      .split { grid-template-columns: 1fr .72fr; }
+      .reverse { grid-template-columns: .72fr 1fr; }
+      .top {
+        position: absolute;
+        z-index: 4;
+        top: 54px;
+        left: 104px;
+        right: 104px;
+        display: flex;
+        justify-content: space-between;
+        color: #99d1ce;
+        font-size: 23px;
+        font-weight: 800;
+        letter-spacing: .08em;
+        text-transform: uppercase;
+      }
+      .kicker {
+        color: #edb443;
+        font-size: 28px;
+        font-weight: 900;
+        letter-spacing: .08em;
+        text-transform: uppercase;
+      }
+      h1 {
+        max-width: 1220px;
+        font-size: 118px;
+        line-height: .95;
+        font-weight: 950;
+        letter-spacing: 0;
+      }
+      h2 {
+        font-size: 88px;
+        line-height: .98;
+        font-weight: 950;
+        letter-spacing: 0;
+      }
+      .sub {
+        color: #99d1ce;
+        font-size: 38px;
+        line-height: 1.22;
+        max-width: 900px;
+      }
+      .snake-wrap {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 24px;
+        min-height: 610px;
+      }
+      .halo {
+        position: absolute;
+        width: 520px;
+        height: 520px;
+        border-radius: 999px;
+        background: radial-gradient(circle, rgba(99,255,138,.28), rgba(17,73,52,.18) 58%, transparent 70%);
+        filter: blur(4px);
+      }
+      .snake {
+        position: relative;
+        z-index: 2;
+        width: 470px;
+        aspect-ratio: 1 / 1;
+        background: url("assets/snake-talking-spritesheet.png") 0% 0% / 400% 100% no-repeat;
+        filter: drop-shadow(0 34px 54px rgba(4, 30, 24, .52));
+        transform-origin: 50% 86%;
+      }
+      .bubble {
+        position: relative;
+        z-index: 3;
+        right: auto;
+        top: auto;
+        width: 520px;
+        padding: 28px 32px;
+        border: 2px solid #99d1ce;
+        border-radius: 24px;
+        background: rgba(12,16,20,.92);
+        color: #f0fffe;
+        font-size: 34px;
+        font-weight: 900;
+        line-height: 1.12;
+        text-align: center;
+      }
+      .shot {
+        width: 100%;
+        border: 2px solid #195466;
+        border-radius: 26px;
+        background: #11151c;
+        box-shadow: 0 32px 100px rgba(0,0,0,.44);
+      }
+      .desktop {
+        height: 690px;
+        object-fit: cover;
+        object-position: top left;
+      }
+      .feedback {
+        width: 1320px;
+        margin-left: auto;
+        margin-right: auto;
+      }
+      .chips { display: flex; flex-wrap: wrap; gap: 18px; margin-top: 34px; }
+      .chip {
+        padding: 16px 24px;
+        border: 2px solid #195466;
+        border-radius: 999px;
+        background: rgba(15,27,34,.9);
+        color: #99d1ce;
+        font-size: 28px;
+        font-weight: 900;
+      }
+      .chip.hot { background: #99d1ce; color: #0c1014; border-color: #99d1ce; }
+      .cue {
+        position: absolute;
+        right: 130px;
+        bottom: 106px;
+        z-index: 4;
+        width: 700px;
+        padding: 30px 34px;
+        border: 2px solid #edb443;
+        border-radius: 24px;
+        background: rgba(12,16,20,.94);
+        font-size: 38px;
+        font-weight: 900;
+        line-height: 1.12;
+      }
+      .final {
+        text-align: left;
+      }
+      .final h1 { font-size: 150px; }
+      .ghost {
+        position: absolute;
+        right: 40px;
+        bottom: 10px;
+        color: rgba(153,209,206,.10);
+        font-size: 520px;
+        line-height: .75;
+        font-weight: 950;
+        pointer-events: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="23" data-width="1920" data-height="1080">
+      <audio id="music-bed" src="assets/lisper-original-bed.wav" data-start="0" data-duration="23" data-track-index="0" data-volume="0.55"></audio>
+
+      <section id="s1" class="clip scene" data-start="0" data-duration="5" data-track-index="1">
+        <div class="top"><span>Kaggle Gemma 4 Good</span><span>Lisper</span></div>
+        <div class="ghost" data-layout-ignore>/s/</div>
+        <div class="content split">
+          <div>
+            <div class="kicker">Private speech practice</div>
+            <h1>Lisp coaching without the clinic vibe.</h1>
+            <div class="chips"><div class="chip hot">Gemma 4</div><div class="chip">low anxiety</div><div class="chip">one cue at a time</div></div>
+          </div>
+          <div class="snake-wrap">
+            <div class="halo"></div>
+            <div id="snake1" class="snake"></div>
+            <div class="bubble">Sally sells seashells.</div>
+          </div>
+        </div>
+      </section>
+
+      <section id="s2" class="clip scene" data-start="5" data-duration="7" data-track-index="2">
+        <div class="top"><span>Demo app</span><span>Browser q4f16 + ZeroGPU fallback</span></div>
+        <div class="content split">
+          <img class="shot desktop" src="assets/app.png" alt="Lisper app" />
+          <div>
+            <div class="kicker">Record</div>
+            <h2>Submit audio. Get a clear next move.</h2>
+            <div class="chips"><div class="chip hot">detect</div><div class="chip">explain</div><div class="chip">correct</div></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="s3" class="clip scene" data-start="12" data-duration="6" data-track-index="3">
+        <div class="top"><span>Feedback</span><span>Palatal pattern example</span></div>
+        <div class="ghost" data-layout-ignore>cue</div>
+        <div class="content">
+          <img class="shot feedback" src="assets/palatal-lisp-description.png" alt="Palatal feedback" />
+          <div class="cue">Bring the tongue tip forward. Brighten the /s/ airflow.</div>
+        </div>
+      </section>
+
+      <section id="s5" class="clip scene" data-start="18" data-duration="5" data-track-index="4">
+        <div class="content split">
+          <div class="final">
+            <div class="kicker">Lisper</div>
+            <h1>Practice privately.</h1>
+            <p class="sub">Built with Gemma 4 E2B + Unsloth LoRA for the Kaggle Gemma 4 Good Hackathon.</p>
+          </div>
+          <div class="snake-wrap">
+            <div class="halo"></div>
+            <div id="snake2" class="snake"></div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <script>
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+      const talkFrames = ["0% 0%", "33.333% 0%", "66.666% 0%", "100% 0%"];
+
+      function talk(selector, start, end) {
+        for (let t = start; t < end; t += 0.18) {
+          tl.set(selector, { backgroundPosition: talkFrames[Math.floor((t - start) / 0.18) % talkFrames.length] }, t);
+        }
+      }
+
+      tl.from("#s1 h1", { opacity: 0, y: 70, duration: .55, ease: "power3.out" }, .2);
+      tl.from("#s1 .chip", { opacity: 0, y: 28, stagger: .08, duration: .35, ease: "back.out(1.6)" }, .85);
+      tl.from("#snake1", { opacity: 0, scale: .72, rotate: -8, duration: .65, ease: "back.out(1.7)" }, .35);
+      tl.from("#s1 .bubble", { opacity: 0, x: 48, duration: .4, ease: "power2.out" }, 1.05);
+      talk("#snake1", 1.1, 4.7);
+      tl.to("#s1", { opacity: 0, duration: .25, ease: "power2.in" }, 4.75);
+      tl.set("#s1", { opacity: 0 }, 5);
+
+      tl.from("#s2 .desktop", { opacity: 0, x: -80, scale: .97, duration: .6, ease: "power3.out" }, 5.15);
+      tl.from("#s2 h2", { opacity: 0, x: 60, duration: .5, ease: "power3.out" }, 5.45);
+      tl.from("#s2 .chip", { opacity: 0, y: 26, stagger: .08, duration: .34, ease: "back.out(1.5)" }, 6.05);
+      tl.to("#s2 .desktop", { y: -22, duration: 5.8, ease: "none" }, 6);
+      tl.to("#s2", { opacity: 0, duration: .25, ease: "power2.in" }, 11.75);
+      tl.set("#s2", { opacity: 0 }, 12);
+
+      tl.from("#s3 .feedback", { opacity: 0, y: 58, scale: .98, duration: .55, ease: "power3.out" }, 12.12);
+      tl.from("#s3 .cue", { opacity: 0, y: 54, duration: .45, ease: "back.out(1.4)" }, 12.9);
+      tl.to("#s3 .cue", { boxShadow: "0 0 58px rgba(237,180,67,.32)", yoyo: true, repeat: 3, duration: .55, ease: "sine.inOut" }, 13.6);
+      tl.to("#s3", { opacity: 0, duration: .25, ease: "power2.in" }, 17.75);
+      tl.set("#s3", { opacity: 0 }, 18);
+
+      tl.from("#s5 h1", { opacity: 0, y: 62, duration: .5, ease: "power3.out" }, 18.12);
+      tl.from("#s5 .sub", { opacity: 0, y: 28, duration: .4, ease: "power2.out" }, 18.55);
+      tl.from("#snake2", { opacity: 0, scale: .78, rotate: 6, duration: .5, ease: "back.out(1.6)" }, 18.25);
+      talk("#snake2", 18.7, 22.4);
+      tl.to("#s5", { opacity: 0, duration: .45, ease: "power2.inOut" }, 22.55);
+
+      window.__timelines["main"] = tl;
+    </script>
+  </body>
+</html>
